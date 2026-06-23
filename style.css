@@ -909,9 +909,9 @@ body {
     }
 
     .analysis-section {
-        break-inside: avoid;
-        page-break-inside: avoid;
-        margin-top: 15px;
+        page-break-before: always;
+        break-before: page;
+        margin-top: 10px;
     }
 
     .advice-section {
