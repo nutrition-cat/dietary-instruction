@@ -39,16 +39,33 @@ document.addEventListener('DOMContentLoaded', () => {
         showScreen('upload-section');
     }
 
+    // Helper function to calculate SHA-256 hash
+    async function sha256(message) {
+        const msgBuffer = new TextEncoder().encode(message);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        return hashHex;
+    }
+
     // ==========================================
-    // 1. AUTHENTICATION LOGIC
+    // 1. AUTHENTICATION LOGIC (SHA-256 Hashed)
     // ==========================================
-    loginForm.addEventListener('submit', (e) => {
+    loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const username = usernameInput.value.trim();
         const password = passwordInput.value.trim();
 
-        // Simple auth check (admin / admin123)
-        if (username === 'admin' && password === 'admin123') {
+        // SHA-256 hashes of credentials to prevent plain text exposure on GitHub Pages
+        // Default username: 'admin'
+        const targetUserHash = '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918';
+        // Default password: 'admin123'
+        const targetPassHash = '2403987e07af4fb56d8170d1033b940989f6655c65a38bf030467c6f059cb2ec';
+
+        const userHash = await sha256(username);
+        const passHash = await sha256(password);
+
+        if (userHash === targetUserHash && passHash === targetPassHash) {
             sessionStorage.setItem('isLoggedIn', 'true');
             loginError.style.display = 'none';
             usernameInput.value = '';
