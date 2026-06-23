@@ -412,7 +412,7 @@ body {
 /* Printable Report A4 landscape container */
 .printable-report {
     background-color: var(--bg-card);
-    width: 1100px; /* Precise layout control for A4 Landscape */
+    width: 1040px; /* Precise layout control for A4 Landscape */
     padding: 25px;
     border-radius: var(--radius-sm);
     box-shadow: 0 10px 40px rgba(0,0,0,0.04);

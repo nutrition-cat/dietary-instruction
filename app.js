@@ -463,7 +463,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 scale: 2, 
                 useCORS: true,
                 logging: false,
-                letterRendering: true
+                letterRendering: true,
+                scrollX: 0,
+                scrollY: 0,
+                windowWidth: 1100
             },
             jsPDF: { 
                 unit: 'mm', 
