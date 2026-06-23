@@ -39,33 +39,25 @@ document.addEventListener('DOMContentLoaded', () => {
         showScreen('upload-section');
     }
 
-    // Helper function to calculate SHA-256 hash
-    async function sha256(message) {
-        const msgBuffer = new TextEncoder().encode(message);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        return hashHex;
-    }
-
     // ==========================================
-    // 1. AUTHENTICATION LOGIC (SHA-256 Hashed)
+    // 1. AUTHENTICATION LOGIC (Base64 Encoded)
     // ==========================================
-    loginForm.addEventListener('submit', async (e) => {
+    loginForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const username = usernameInput.value.trim();
         const password = passwordInput.value.trim();
 
-        // SHA-256 hashes of credentials to prevent plain text exposure on GitHub Pages
-        // Default username: 'admin'
-        const targetUserHash = '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918';
-        // Default password: 'admin123'
-        const targetPassHash = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
+        // Base64 encoded credentials to prevent plain text exposure on GitHub Pages
+        // Default username: 'admin' -> 'YWRtaW4='
+        const targetUserBase64 = 'YWRtaW4=';
+        // Default password: 'admin123' -> 'YWRtaW4xMjM='
+        const targetPassBase64 = 'YWRtaW4xMjM=';
 
-        const userHash = await sha256(username);
-        const passHash = await sha256(password);
+        // Convert input to Base64
+        const userBase64 = btoa(unescape(encodeURIComponent(username)));
+        const passBase64 = btoa(unescape(encodeURIComponent(password)));
 
-        if (userHash === targetUserHash && passHash === targetPassHash) {
+        if (userBase64 === targetUserBase64 && passBase64 === targetPassBase64) {
             sessionStorage.setItem('isLoggedIn', 'true');
             loginError.style.display = 'none';
             usernameInput.value = '';
