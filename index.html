@@ -26,42 +26,8 @@
 </head>
 <body>
     <div id="app">
-        <!-- 1. ログイン画面 -->
-        <section id="login-section" class="screen-section active">
-            <div class="login-card">
-                <div class="login-header">
-                    <div class="logo-container">
-                        <i data-lucide="heart-pulse" class="logo-icon"></i>
-                    </div>
-                    <h2>栄養食事指導支援システム</h2>
-                    <p class="subtitle">食事記録解析 & レポート作成</p>
-                </div>
-                <form id="login-form">
-                    <div class="form-group">
-                        <label for="username">ログインID</label>
-                        <div class="input-wrapper">
-                            <i data-lucide="user" class="input-icon"></i>
-                            <input type="text" id="username" placeholder="ユーザーIDを入力" required autocomplete="username">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="password">パスワード</label>
-                        <div class="input-wrapper">
-                            <i data-lucide="lock" class="input-icon"></i>
-                            <input type="password" id="password" placeholder="パスワードを入力" required autocomplete="current-password">
-                        </div>
-                    </div>
-                    <div id="login-error" class="error-message">IDまたはパスワードが正しくありません。</div>
-                    <button type="submit" class="btn-primary w-full">
-                        <span>ログイン</span>
-                        <i data-lucide="log-in"></i>
-                    </button>
-                </form>
-            </div>
-        </section>
-
         <!-- 2. ファイルアップロード画面 -->
-        <section id="upload-section" class="screen-section">
+        <section id="upload-section" class="screen-section active">
             <header class="app-header">
                 <div class="header-left">
                     <i data-lucide="heart-pulse" class="app-icon"></i>
@@ -69,7 +35,6 @@
                 </div>
                 <div class="header-right">
                     <span id="user-display"><i data-lucide="user-check"></i> 管理栄養士</span>
-                    <button id="logout-btn-1" class="btn-text"><i data-lucide="log-out"></i> ログアウト</button>
                 </div>
             </header>
             
@@ -108,7 +73,6 @@
                 <div class="header-right">
                     <button id="back-btn" class="btn-secondary"><i data-lucide="arrow-left"></i> 戻る</button>
                     <button id="pdf-btn" class="btn-primary"><i data-lucide="download"></i> PDFダウンロード</button>
-                    <button id="logout-btn-2" class="btn-text"><i data-lucide="log-out"></i> ログアウト</button>
                 </div>
             </header>
 

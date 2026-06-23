@@ -4,14 +4,8 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     // UI Elements
-    const loginSection = document.getElementById('login-section');
     const uploadSection = document.getElementById('upload-section');
     const reportSection = document.getElementById('report-section');
-    
-    const loginForm = document.getElementById('login-form');
-    const usernameInput = document.getElementById('username');
-    const passwordInput = document.getElementById('password');
-    const loginError = document.getElementById('login-error');
     
     const dropZone = document.getElementById('drop-zone');
     const fileInput = document.getElementById('file-input');
@@ -20,8 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const backBtn = document.getElementById('back-btn');
     const pdfBtn = document.getElementById('pdf-btn');
-    const logoutBtn1 = document.getElementById('logout-btn-1');
-    const logoutBtn2 = document.getElementById('logout-btn-2');
     
     const patientNameInput = document.getElementById('patient-name');
     const reportDateDisplay = document.getElementById('report-date-display');
@@ -33,49 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize Lucide Icons
     lucide.createIcons();
-
-    // Check login state on load
-    if (sessionStorage.getItem('isLoggedIn') === 'true') {
-        showScreen('upload-section');
-    }
-
-    // ==========================================
-    // 1. AUTHENTICATION LOGIC (Base64 Encoded)
-    // ==========================================
-    loginForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const username = usernameInput.value.trim();
-        const password = passwordInput.value.trim();
-
-        // Base64 encoded credentials to prevent plain text exposure on GitHub Pages
-        // Default username: 'admin' -> 'YWRtaW4='
-        const targetUserBase64 = 'YWRtaW4=';
-        // Default password: 'admin123' -> 'YWRtaW4xMjM='
-        const targetPassBase64 = 'YWRtaW4xMjM=';
-
-        // Convert input to Base64
-        const userBase64 = btoa(unescape(encodeURIComponent(username)));
-        const passBase64 = btoa(unescape(encodeURIComponent(password)));
-
-        if (userBase64 === targetUserBase64 && passBase64 === targetPassBase64) {
-            sessionStorage.setItem('isLoggedIn', 'true');
-            loginError.style.display = 'none';
-            usernameInput.value = '';
-            passwordInput.value = '';
-            showScreen('upload-section');
-        } else {
-            loginError.style.display = 'flex';
-        }
-    });
-
-    const logout = () => {
-        sessionStorage.removeItem('isLoggedIn');
-        parsedData = null;
-        showScreen('login-section');
-    };
-
-    logoutBtn1.addEventListener('click', logout);
-    logoutBtn2.addEventListener('click', logout);
 
     // ==========================================
     // 2. EXCEL UPLOAD & ZIP PARSING
