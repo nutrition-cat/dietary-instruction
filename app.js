@@ -450,9 +450,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const patientName = patientNameInput.value.trim();
         const filename = `栄養食事指導参考資料_${patientName ? patientName + '様' : '食事記録'}.pdf`;
         
-        // Add class to enforce left-alignment and fixed width during capture
-        document.body.classList.add('pdf-generating');
-
         // html2pdf Options
         const opt = {
             margin: 10,
@@ -462,9 +459,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 scale: 2, 
                 useCORS: true,
                 logging: false,
-                letterRendering: true,
-                scrollX: 0,
-                scrollY: 0
+                letterRendering: true
             },
             jsPDF: { 
                 unit: 'mm', 
@@ -474,13 +469,8 @@ document.addEventListener('DOMContentLoaded', () => {
             pagebreak: { mode: ['css', 'legacy'] }
         };
 
-        // Run html2pdf and clean up class afterwards
-        html2pdf().set(opt).from(element).save().then(() => {
-            document.body.classList.remove('pdf-generating');
-        }).catch(err => {
-            console.error(err);
-            document.body.classList.remove('pdf-generating');
-        });
+        // Run html2pdf
+        html2pdf().set(opt).from(element).save();
     });
 
     backBtn.addEventListener('click', () => {
