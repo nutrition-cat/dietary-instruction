@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Default username: 'admin'
         const targetUserHash = '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918';
         // Default password: 'admin123'
-        const targetPassHash = '2403987e07af4fb56d8170d1033b940989f6655c65a38bf030467c6f059cb2ec';
+        const targetPassHash = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
 
         const userHash = await sha256(username);
         const passHash = await sha256(password);
