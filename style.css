@@ -1,0 +1,939 @@
+/* ==========================================
+   CSS Design System & Layout for Nutrition Report
+   ========================================== */
+
+:root {
+    --primary: #2a9d8f;
+    --primary-light: #eef8f6;
+    --primary-dark: #1e7066;
+    --primary-glow: rgba(42, 157, 143, 0.15);
+    
+    --bg-app: #f0f4f3;
+    --bg-card: #ffffff;
+    --text-main: #2c3e50;
+    --text-muted: #7f8c8d;
+    --border-color: #e2e8f0;
+    
+    /* Meal Section Colors */
+    --breakfast: #ff9f43;
+    --breakfast-light: #fff5eb;
+    --lunch: #00d2d3;
+    --lunch-light: #e6faff;
+    --dinner: #5f27cd;
+    --dinner-light: #f3effc;
+    --other: #8395a7;
+    --other-light: #f1f3f5;
+    
+    /* PFC Colors */
+    --pfc-p: #ff6b6b;
+    --pfc-f: #feca57;
+    --pfc-c: #48dbfb;
+    
+    --radius-sm: 6px;
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    
+    --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    --shadow-hover: 0 10px 30px rgba(42, 157, 143, 0.12);
+}
+
+/* Global Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg-app);
+    color: var(--text-main);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+}
+
+/* Screen Sections Transition */
+.screen-section {
+    display: none;
+    min-height: 100vh;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.screen-section.active {
+    display: flex;
+    flex-direction: column;
+    opacity: 1;
+}
+
+#report-section.active {
+    display: block; /* Report needs standard flow for printing */
+}
+
+/* Helper Utilities */
+.w-full { width: 100%; }
+.text-muted { color: var(--text-muted); }
+.text-center { text-align: center; }
+
+/* Buttons */
+.btn-primary, .btn-secondary, .btn-text {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    border: none;
+    font-size: 14px;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    color: white;
+    box-shadow: 0 4px 12px rgba(42, 157, 143, 0.2);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 15px rgba(42, 157, 143, 0.3);
+}
+
+.btn-secondary {
+    background-color: white;
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+    background-color: var(--primary-light);
+    border-color: var(--primary);
+    color: var(--primary-dark);
+}
+
+.btn-text {
+    background-color: transparent;
+    color: var(--text-muted);
+    padding: 8px 12px;
+}
+
+.btn-text:hover {
+    color: #e74c3c;
+    background-color: rgba(231, 76, 60, 0.05);
+}
+
+/* Form inputs */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--text-main);
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-wrapper input {
+    width: 100%;
+    padding: 12px 14px 12px 40px;
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    outline: none;
+    transition: var(--transition);
+}
+
+.input-wrapper input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+.input-icon {
+    position: absolute;
+    left: 14px;
+    width: 18px;
+    height: 18px;
+    color: var(--text-muted);
+}
+
+.error-message {
+    color: #e74c3c;
+    font-size: 12px;
+    margin-top: 5px;
+    display: none;
+    align-items: center;
+    gap: 4px;
+}
+
+/* ==========================================
+   1. LOGIN VIEW
+   ========================================== */
+#login-section {
+    justify-content: center;
+    align-items: center;
+    background: radial-gradient(circle at 10% 20%, rgba(238, 248, 246, 1) 0%, rgba(219, 237, 235, 1) 90%);
+}
+
+.login-card {
+    background-color: var(--bg-card);
+    width: 100%;
+    max-width: 400px;
+    padding: 40px 30px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    transform: translateY(20px);
+    animation: slideUp 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+}
+
+@keyframes slideUp {
+    to {
+        transform: translateY(0);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.06);
+    }
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.logo-container {
+    width: 60px;
+    height: 60px;
+    background-color: var(--primary-light);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px;
+}
+
+.logo-icon {
+    color: var(--primary);
+    width: 32px;
+    height: 32px;
+}
+
+.login-header h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 4px;
+}
+
+.login-header .subtitle {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+/* ==========================================
+   2. UPLOAD VIEW
+   ========================================== */
+.app-header {
+    background-color: var(--bg-card);
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.app-icon {
+    color: var(--primary);
+    width: 24px;
+    height: 24px;
+}
+
+.header-left h1 {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+#user-display {
+    font-size: 13px;
+    color: var(--text-main);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background-color: var(--primary-light);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 500;
+}
+
+#user-display svg {
+    width: 14px;
+    height: 14px;
+    color: var(--primary);
+}
+
+.upload-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+}
+
+.upload-card {
+    background-color: var(--bg-card);
+    width: 100%;
+    max-width: 600px;
+    padding: 40px;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+    text-align: center;
+}
+
+.upload-header {
+    margin-bottom: 30px;
+}
+
+.upload-header h2 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.upload-header p {
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+.drop-zone {
+    border: 2px dashed #cbd5e1;
+    background-color: #f8fafc;
+    border-radius: var(--radius-md);
+    padding: 45px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.drop-zone:hover, .drop-zone.dragover {
+    border-color: var(--primary);
+    background-color: var(--primary-light);
+}
+
+.drop-icon {
+    width: 48px;
+    height: 48px;
+    color: var(--text-muted);
+    margin-bottom: 15px;
+    transition: var(--transition);
+}
+
+.drop-zone:hover .drop-icon, .drop-zone.dragover .drop-icon {
+    color: var(--primary);
+    transform: scale(1.05);
+}
+
+.drop-text {
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.drop-or {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+}
+
+.parse-loading {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 0;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3.5px solid var(--primary-light);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 1s infinite linear;
+    margin-bottom: 15px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.parse-loading p {
+    font-size: 14px;
+    color: var(--text-main);
+    font-weight: 500;
+}
+
+/* ==========================================
+   3. REPORT PREVIEW & PRINTABLE AREA
+   ========================================== */
+.report-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 30px 15px;
+    background-color: var(--bg-app);
+}
+
+/* Printable Report A4 landscape container */
+.printable-report {
+    background-color: var(--bg-card);
+    width: 1100px; /* Precise layout control for A4 Landscape */
+    padding: 25px;
+    border-radius: var(--radius-sm);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.04);
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Title Area */
+.report-title-area {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2.5px solid var(--primary);
+    padding-bottom: 12px;
+}
+
+.title-main h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--primary-dark);
+    letter-spacing: 1px;
+}
+
+.title-main .title-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+.meta-inputs {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+.meta-row {
+    font-size: 13px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+}
+
+.meta-label {
+    color: var(--text-muted);
+    margin-right: 6px;
+}
+
+.meta-value {
+    color: var(--text-main);
+    font-weight: 600;
+}
+
+.meta-input-field {
+    border: none;
+    border-bottom: 1.5px solid var(--text-muted);
+    padding: 2px 5px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-main);
+    width: 160px;
+    outline: none;
+    text-align: center;
+    transition: var(--transition);
+}
+
+.meta-input-field:focus {
+    border-bottom-color: var(--primary);
+    background-color: var(--primary-light);
+}
+
+.meta-suffix {
+    margin-left: 4px;
+    font-weight: 600;
+}
+
+/* Meals Grid (4 Columns) */
+.meals-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.meal-card {
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    display: flex;
+    flex-direction: column;
+    background-color: #fafbfc;
+    overflow: hidden;
+    min-height: 310px;
+    height: auto;
+}
+
+.meal-card-header {
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: white;
+}
+
+.meal-card-header h3 {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.meal-icon {
+    font-size: 14px;
+}
+
+.bg-breakfast { background-color: var(--breakfast); }
+.bg-lunch { background-color: var(--lunch); }
+.bg-dinner { background-color: var(--dinner); }
+.bg-other { background-color: var(--other); }
+
+/* Images Container in Meal Card */
+.meal-images-container {
+    height: 70px;
+    display: flex;
+    gap: 5px;
+    padding: 5px;
+    background-color: #f1f3f5;
+    overflow-x: auto;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Hide scrollbars for image container */
+.meal-images-container::-webkit-scrollbar {
+    height: 4px;
+}
+.meal-images-container::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 2px;
+}
+
+.meal-img {
+    height: 60px;
+    width: 60px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid rgba(0,0,0,0.08);
+    background-color: white;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.meal-img:hover {
+    transform: scale(1.05);
+}
+
+.no-image-placeholder {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-align: center;
+    width: 100%;
+    font-style: italic;
+}
+
+/* Meal Food List Table */
+.meal-table-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 3px;
+}
+
+.meal-table-container::-webkit-scrollbar {
+    width: 4px;
+}
+.meal-table-container::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 2px;
+}
+
+.meal-card table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+}
+
+.meal-card th {
+    font-weight: 600;
+    color: var(--text-muted);
+    text-align: left;
+    padding: 4px 6px;
+    border-bottom: 1px solid var(--border-color);
+    background-color: #fafbfc;
+    position: sticky;
+    top: 0;
+}
+
+.meal-card td {
+    padding: 5px 6px;
+    border-bottom: 1px dashed var(--border-color);
+    vertical-align: top;
+    word-break: break-all;
+}
+
+.meal-card tr:last-child td {
+    border-bottom: none;
+}
+
+/* Lower Section: Analysis Grid */
+.analysis-section {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+.section-subtitle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1.5px solid var(--primary);
+    padding-bottom: 6px;
+    margin-bottom: 10px;
+}
+
+.subtitle-icon {
+    width: 16px;
+    height: 16px;
+    color: var(--primary);
+}
+
+.section-subtitle h3 {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+/* Left: Analysis Table */
+.analysis-left {
+    display: flex;
+    flex-direction: column;
+}
+
+.analysis-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+}
+
+.analysis-table th {
+    background-color: var(--primary-light);
+    color: var(--primary-dark);
+    font-weight: 700;
+    padding: 6px 8px;
+    border: 1px solid var(--border-color);
+    text-align: center;
+}
+
+.analysis-table td {
+    padding: 5px 8px;
+    border: 1px solid var(--border-color);
+    text-align: center;
+}
+
+.analysis-table .cell-label {
+    font-weight: 600;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+}
+
+.analysis-table .num-val {
+    font-weight: 500;
+}
+
+.analysis-table .disabled-cell {
+    background-color: #f8fafc;
+    font-size: 10px;
+    color: #94a3b8;
+    line-height: 1.3;
+}
+
+.analysis-table .row-total {
+    background-color: #fafbfc;
+    font-weight: 700;
+}
+.analysis-table .row-total td {
+    border-top: 1.5px solid var(--primary);
+    color: var(--primary-dark);
+    font-weight: 700;
+}
+
+/* Vitamin Grid */
+.vitamins-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 5px;
+    margin-top: 10px;
+    background-color: #f8fafc;
+    border-radius: var(--radius-sm);
+    padding: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.vitamin-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 9.5px;
+    border-right: 1px dashed var(--border-color);
+}
+.vitamin-item:last-child {
+    border-right: none;
+}
+
+.vit-label {
+    color: var(--text-muted);
+    margin-bottom: 2px;
+}
+
+.vit-val {
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+/* Right: PFC Balance Chart Panel */
+.pfc-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background-color: #fafbfc;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 10px 15px;
+    height: 165px; /* Matches analysis table height */
+}
+
+.chart-wrapper {
+    width: 110px;
+    height: 110px;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.pfc-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+}
+
+.pfc-legend-item {
+    display: grid;
+    grid-template-columns: 8px 80px 1fr auto;
+    align-items: center;
+    gap: 6px;
+    font-size: 10.5px;
+}
+
+.legend-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}
+.bg-pfc-p { background-color: var(--pfc-p); }
+.bg-pfc-f { background-color: var(--pfc-f); }
+.bg-pfc-c { background-color: var(--pfc-c); }
+
+.legend-name {
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.legend-val {
+    color: var(--text-muted);
+    font-size: 9.5px;
+}
+
+.legend-pct {
+    font-weight: 700;
+    text-align: right;
+}
+.protein .legend-pct { color: var(--pfc-p); }
+.fat .legend-pct { color: var(--pfc-f); }
+.carb .legend-pct { color: var(--pfc-c); }
+
+.pfc-target-ref {
+    margin-top: 6px;
+    padding-top: 5px;
+    border-top: 1px dashed var(--border-color);
+    font-size: 8.5px;
+    color: var(--text-muted);
+    line-height: 1.2;
+}
+
+.ref-title {
+    font-weight: 600;
+    display: block;
+}
+
+/* Advice Memo Section */
+.advice-section {
+    border: 1.5px solid var(--primary);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.advice-header {
+    background-color: var(--primary-light);
+    color: var(--primary-dark);
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.advice-icon {
+    width: 14px;
+    height: 14px;
+}
+
+.advice-body {
+    background-color: white;
+    padding: 5px;
+}
+
+.advice-input {
+    width: 100%;
+    height: 50px;
+    border: none;
+    resize: none;
+    font-size: 11px;
+    color: var(--text-main);
+    outline: none;
+    padding: 4px;
+    font-family: inherit;
+}
+
+/* ==========================================
+   PRINT STYLING & MEDIA QUERIES
+   ========================================== */
+@media print {
+    body {
+        background-color: white;
+        color: black;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+
+    .screen-section {
+        display: none !important;
+    }
+
+    .screen-section.active {
+        display: block !important;
+    }
+
+    .report-wrapper {
+        padding: 0 !important;
+        background-color: white !important;
+        display: block !important;
+    }
+
+    .printable-report {
+        width: 100% !important;
+        max-width: 100% !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        background-color: white !important;
+    }
+
+    /* Allow card to auto-expand and avoid breaking inside card */
+    .meal-card {
+        height: auto !important;
+        min-height: 250px !important;
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+    
+    .meal-table-container {
+        overflow-y: visible !important;
+        height: auto !important;
+    }
+
+    .analysis-section {
+        break-inside: avoid;
+        page-break-inside: avoid;
+        margin-top: 15px;
+    }
+
+    .advice-section {
+        break-inside: avoid;
+        page-break-inside: avoid;
+        margin-top: 15px;
+    }
+    
+    .advice-input::placeholder {
+        color: transparent; /* Hide placeholder when printing */
+    }
+    
+    .meta-input-field {
+        border-bottom: none !important; /* Hide input border in print */
+    }
+}
+
+/* Slide animation for screen change */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+.screen-section.active {
+    animation: fadeIn 0.4s ease forwards;
+}

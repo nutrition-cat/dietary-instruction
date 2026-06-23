@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>栄養食事指導支援システム</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS Link -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- CDN Libraries -->
+    <!-- JSZip (for extracting images from xlsx zip structure) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <!-- SheetJS (for parsing sheet data) -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!-- Chart.js (for PFC balance chart) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- html2pdf.js (for rendering A4 PDF) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div id="app">
+        <!-- 1. ログイン画面 -->
+        <section id="login-section" class="screen-section active">
+            <div class="login-card">
+                <div class="login-header">
+                    <div class="logo-container">
+                        <i data-lucide="heart-pulse" class="logo-icon"></i>
+                    </div>
+                    <h2>栄養食事指導支援システム</h2>
+                    <p class="subtitle">食事記録解析 & レポート作成</p>
+                </div>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="username">ログインID</label>
+                        <div class="input-wrapper">
+                            <i data-lucide="user" class="input-icon"></i>
+                            <input type="text" id="username" placeholder="ユーザーIDを入力" required autocomplete="username">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">パスワード</label>
+                        <div class="input-wrapper">
+                            <i data-lucide="lock" class="input-icon"></i>
+                            <input type="password" id="password" placeholder="パスワードを入力" required autocomplete="current-password">
+                        </div>
+                    </div>
+                    <div id="login-error" class="error-message">IDまたはパスワードが正しくありません。</div>
+                    <button type="submit" class="btn-primary w-full">
+                        <span>ログイン</span>
+                        <i data-lucide="log-in"></i>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- 2. ファイルアップロード画面 -->
+        <section id="upload-section" class="screen-section">
+            <header class="app-header">
+                <div class="header-left">
+                    <i data-lucide="heart-pulse" class="app-icon"></i>
+                    <h1>栄養食事指導支援システム</h1>
+                </div>
+                <div class="header-right">
+                    <span id="user-display"><i data-lucide="user-check"></i> 管理栄養士</span>
+                    <button id="logout-btn-1" class="btn-text"><i data-lucide="log-out"></i> ログアウト</button>
+                </div>
+            </header>
+            
+            <main class="upload-container">
+                <div class="upload-card">
+                    <div class="upload-header">
+                        <h2>食事記録データの読み込み</h2>
+                        <p>Excelファイル（.xlsx）をアップロードして、指導用レポートを自動生成します。</p>
+                    </div>
+                    
+                    <div id="drop-zone" class="drop-zone">
+                        <i data-lucide="file-spreadsheet" class="drop-icon"></i>
+                        <p class="drop-text">ここにExcelファイルをドラッグ＆ドロップ</p>
+                        <span class="drop-or">または</span>
+                        <label for="file-input" class="btn-secondary">ファイルを選択</label>
+                        <input type="file" id="file-input" accept=".xlsx" style="display: none;">
+                    </div>
+                    
+                    <div id="parse-loading" class="parse-loading">
+                        <div class="spinner"></div>
+                        <p>Excelファイルを解析中（画像データを抽出しています）...</p>
+                    </div>
+                    
+                    <div id="upload-error" class="error-message"></div>
+                </div>
+            </main>
+        </section>
+
+        <!-- 3. レポート表示・印刷画面 -->
+        <section id="report-section" class="screen-section">
+            <header class="app-header no-print">
+                <div class="header-left">
+                    <i data-lucide="heart-pulse" class="app-icon"></i>
+                    <h1>食事記録レポートプレビュー</h1>
+                </div>
+                <div class="header-right">
+                    <button id="back-btn" class="btn-secondary"><i data-lucide="arrow-left"></i> 戻る</button>
+                    <button id="pdf-btn" class="btn-primary"><i data-lucide="download"></i> PDFダウンロード</button>
+                    <button id="logout-btn-2" class="btn-text"><i data-lucide="log-out"></i> ログアウト</button>
+                </div>
+            </header>
+
+            <div class="report-wrapper">
+                <!-- A4横サイズ相当の印刷用コンテナ -->
+                <div id="printable-report" class="printable-report">
+                    <!-- レポートヘッダー -->
+                    <div class="report-title-area">
+                        <div class="title-main">
+                            <h2>栄養食事指導参考資料</h2>
+                            <p class="title-sub">食事記録レポート</p>
+                        </div>
+                        <div class="meta-inputs">
+                            <div class="meta-row">
+                                <span class="meta-label">指導日:</span>
+                                <span id="report-date-display" class="meta-value">2026年6月22日</span>
+                            </div>
+                            <div class="meta-row">
+                                <span class="meta-label">対象者様:</span>
+                                <input type="text" id="patient-name" class="meta-input-field" placeholder="氏名をご記入ください">
+                                <span class="meta-suffix">様</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 上段：食事内容と写真（朝・昼・夕・その他） -->
+                    <div class="meals-grid">
+                        <!-- 朝食ブロック -->
+                        <div class="meal-card" id="meal-breakfast">
+                            <div class="meal-card-header bg-breakfast">
+                                <span class="meal-icon">☀️</span>
+                                <h3>朝食</h3>
+                            </div>
+                            <div class="meal-images-container" id="images-breakfast">
+                                <!-- JSで画像が挿入されます -->
+                            </div>
+                            <div class="meal-table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>料理名</th>
+                                            <th>メモ</th>
+                                            <th style="width: 50px; text-align: right;">単位</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="list-breakfast">
+                                        <!-- JSでデータが挿入されます -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 昼食ブロック -->
+                        <div class="meal-card" id="meal-lunch">
+                            <div class="meal-card-header bg-lunch">
+                                <span class="meal-icon">🕛</span>
+                                <h3>昼食</h3>
+                            </div>
+                            <div class="meal-images-container" id="images-lunch">
+                                <!-- JSで画像が挿入されます -->
+                            </div>
+                            <div class="meal-table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>料理名</th>
+                                            <th>メモ</th>
+                                            <th style="width: 50px; text-align: right;">単位</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="list-lunch">
+                                        <!-- JSでデータが挿入されます -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 夕食ブロック -->
+                        <div class="meal-card" id="meal-dinner">
+                            <div class="meal-card-header bg-dinner">
+                                <span class="meal-icon">🌙</span>
+                                <h3>夕食</h3>
+                            </div>
+                            <div class="meal-images-container" id="images-dinner">
+                                <!-- JSで画像が挿入されます -->
+                            </div>
+                            <div class="meal-table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>料理名</th>
+                                            <th>メモ</th>
+                                            <th style="width: 50px; text-align: right;">単位</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="list-dinner">
+                                        <!-- JSでデータが挿入されます -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- その他ブロック -->
+                        <div class="meal-card" id="meal-other">
+                            <div class="meal-card-header bg-other">
+                                <span class="meal-icon">☕</span>
+                                <h3>その他</h3>
+                            </div>
+                            <div class="meal-images-container" id="images-other">
+                                <!-- JSで画像が挿入されます -->
+                            </div>
+                            <div class="meal-table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>料理名</th>
+                                            <th>メモ</th>
+                                            <th style="width: 50px; text-align: right;">単位</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="list-other">
+                                        <!-- JSでデータが挿入されます -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 下段：栄養分析＆PFCバランス -->
+                    <div class="analysis-section">
+                        <!-- 栄養分析テーブル（左） -->
+                        <div class="analysis-left">
+                            <div class="section-subtitle">
+                                <i data-lucide="bar-chart-3" class="subtitle-icon"></i>
+                                <h3>栄養素摂取分析</h3>
+                            </div>
+                            <table class="analysis-table">
+                                <thead>
+                                    <tr>
+                                        <th>栄養区分</th>
+                                        <th>エネルギー (kcal)</th>
+                                        <th>たんぱく質 (g)</th>
+                                        <th>脂質 (g)</th>
+                                        <th>炭水化物 (g)</th>
+                                        <th>食物繊維 (g)</th>
+                                        <th>カルシウム (mg)</th>
+                                        <th>鉄 (mg)</th>
+                                        <th>塩分相当 (g)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="cell-label"><span class="dot bg-breakfast"></span> 朝食</td>
+                                        <td id="val-breakfast-kcal" class="num-val">-</td>
+                                        <td rowspan="4" class="disabled-cell text-muted">1日合計のみ<br>表示</td>
+                                        <td rowspan="4" class="disabled-cell text-muted">1日合計のみ<br>表示</td>
+                                        <td rowspan="4" class="disabled-cell text-muted">1日合計のみ<br>表示</td>
+                                        <td rowspan="4" class="disabled-cell text-muted">1日合計のみ<br>表示</td>
+                                        <td rowspan="4" class="disabled-cell text-muted">1日合計のみ<br>表示</td>
+                                        <td rowspan="4" class="disabled-cell text-muted">1日合計のみ<br>表示</td>
+                                        <td rowspan="4" class="disabled-cell text-muted">1日合計のみ<br>表示</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="cell-label"><span class="dot bg-lunch"></span> 昼食</td>
+                                        <td id="val-lunch-kcal" class="num-val">-</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="cell-label"><span class="dot bg-dinner"></span> 夕食</td>
+                                        <td id="val-dinner-kcal" class="num-val">-</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="cell-label"><span class="dot bg-other"></span> その他</td>
+                                        <td id="val-other-kcal" class="num-val">-</td>
+                                    </tr>
+                                    <tr class="row-total">
+                                        <td class="cell-label">1日合計</td>
+                                        <td id="val-total-kcal" class="num-val">-</td>
+                                        <td id="val-total-protein" class="num-val">-</td>
+                                        <td id="val-total-fat" class="num-val">-</td>
+                                        <td id="val-total-carb" class="num-val">-</td>
+                                        <td id="val-total-fiber" class="num-val">-</td>
+                                        <td id="val-total-calcium" class="num-val">-</td>
+                                        <td id="val-total-iron" class="num-val">-</td>
+                                        <td id="val-total-salt" class="num-val">-</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            
+                            <!-- 微量栄養素追加情報 -->
+                            <div class="vitamins-grid">
+                                <div class="vitamin-item">
+                                    <span class="vit-label">ビタミンA (µg):</span>
+                                    <span id="val-total-vit-a" class="vit-val">-</span>
+                                </div>
+                                <div class="vitamin-item">
+                                    <span class="vit-label">ビタミンD (µg):</span>
+                                    <span id="val-total-vit-d" class="vit-val">-</span>
+                                </div>
+                                <div class="vitamin-item">
+                                    <span class="vit-label">ビタミンB1 (mg):</span>
+                                    <span id="val-total-vit-b1" class="vit-val">-</span>
+                                </div>
+                                <div class="vitamin-item">
+                                    <span class="vit-label">ビタミンB2 (mg):</span>
+                                    <span id="val-total-vit-b2" class="vit-val">-</span>
+                                </div>
+                                <div class="vitamin-item">
+                                    <span class="vit-label">ビタミンB6 (mg):</span>
+                                    <span id="val-total-vit-b6" class="vit-val">-</span>
+                                </div>
+                                <div class="vitamin-item">
+                                    <span class="vit-label">ビタミンC (mg):</span>
+                                    <span id="val-total-vit-c" class="vit-val">-</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PFCバランスグラフ（右） -->
+                        <div class="analysis-right">
+                            <div class="section-subtitle">
+                                <i data-lucide="pie-chart" class="subtitle-icon"></i>
+                                <h3>1日のPFCバランス</h3>
+                            </div>
+                            <div class="pfc-container">
+                                <div class="chart-wrapper">
+                                    <canvas id="pfcChart"></canvas>
+                                </div>
+                                <div class="pfc-details">
+                                    <div class="pfc-legend-item protein">
+                                        <span class="legend-dot bg-pfc-p"></span>
+                                        <span class="legend-name">P (たんぱく質)</span>
+                                        <span id="pfc-p-val" class="legend-val">0g (- kcal)</span>
+                                        <span id="pfc-p-pct" class="legend-pct">- %</span>
+                                    </div>
+                                    <div class="pfc-legend-item fat">
+                                        <span class="legend-dot bg-pfc-f"></span>
+                                        <span class="legend-name">F (脂質)</span>
+                                        <span id="pfc-f-val" class="legend-val">0g (- kcal)</span>
+                                        <span id="pfc-f-pct" class="legend-pct">- %</span>
+                                    </div>
+                                    <div class="pfc-legend-item carb">
+                                        <span class="legend-dot bg-pfc-c"></span>
+                                        <span class="legend-name">C (炭水化物)</span>
+                                        <span id="pfc-c-val" class="legend-val">0g (- kcal)</span>
+                                        <span id="pfc-c-pct" class="legend-pct">- %</span>
+                                    </div>
+                                    <div class="pfc-target-ref">
+                                        <span class="ref-title">目標比率の目安（厚生労働省）:</span>
+                                        <span class="ref-body">P: 13〜20% | F: 20〜30% | C: 50〜65%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- コメント・アドバイス欄（医療用テンプレート） -->
+                    <div class="advice-section">
+                        <div class="advice-header">
+                            <i data-lucide="message-square" class="advice-icon"></i>
+                            <span>栄養指導メモ・アドバイス欄</span>
+                        </div>
+                        <div class="advice-body">
+                            <textarea id="advice-textarea" class="advice-input" placeholder="指導時のメモや患者様へのコメント、目標設定などをここに入力できます（印刷時に反映されます）。"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Script Link -->
+    <script src="app.js"></script>
+</body>
+</html>
