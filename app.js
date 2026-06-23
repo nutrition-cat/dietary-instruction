@@ -450,9 +450,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const patientName = patientNameInput.value.trim();
         const filename = `栄養食事指導参考資料_${patientName ? patientName + '様' : '食事記録'}.pdf`;
         
-        // Temporarily adjust some styles for pdf generation
-        const adviceField = document.getElementById('advice-textarea');
-        const adviceValue = adviceField.value;
+        // Add class to enforce left-alignment and fixed width during capture
+        document.body.classList.add('pdf-generating');
 
         // html2pdf Options
         const opt = {
@@ -465,8 +464,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 logging: false,
                 letterRendering: true,
                 scrollX: 0,
-                scrollY: 0,
-                windowWidth: 1100
+                scrollY: 0
             },
             jsPDF: { 
                 unit: 'mm', 
@@ -476,8 +474,13 @@ document.addEventListener('DOMContentLoaded', () => {
             pagebreak: { mode: ['css', 'legacy'] }
         };
 
-        // Run html2pdf
-        html2pdf().set(opt).from(element).save();
+        // Run html2pdf and clean up class afterwards
+        html2pdf().set(opt).from(element).save().then(() => {
+            document.body.classList.remove('pdf-generating');
+        }).catch(err => {
+            console.error(err);
+            document.body.classList.remove('pdf-generating');
+        });
     });
 
     backBtn.addEventListener('click', () => {

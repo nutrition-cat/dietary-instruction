@@ -937,3 +937,18 @@ body {
 .screen-section.active {
     animation: fadeIn 0.4s ease forwards;
 }
+
+/* Force clean layout alignment during PDF generation to prevent clipping */
+body.pdf-generating .report-wrapper {
+    display: block !important;
+    padding: 0 !important;
+    background-color: white !important;
+}
+
+body.pdf-generating .printable-report {
+    width: 1040px !important;
+    margin: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+}
