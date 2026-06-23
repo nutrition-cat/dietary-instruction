@@ -859,6 +859,14 @@ body {
     font-family: inherit;
 }
 
+/* Page break trigger for html2pdf.js */
+.html2pdf__page-break {
+    page-break-before: always;
+    break-before: page;
+    display: block;
+    height: 0;
+}
+
 /* ==========================================
    PRINT STYLING & MEDIA QUERIES
    ========================================== */
